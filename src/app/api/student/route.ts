@@ -10,11 +10,14 @@ export type StudentGetResponse = {
 export const GET = async () => {
   const prisma = getPrisma();
 
-  //2. Display list of student
-  // const students = await prisma...
+  const students = await prisma.student.findMany({
+    orderBy: {
+      studentId: 'asc',
+    },
+  });
 
   return NextResponse.json<StudentGetResponse>({
-    students: [], //replace empty array with result from DB
+    students: students,
   });
 };
 
@@ -33,13 +36,24 @@ export const POST = async (request: NextRequest) => {
   const body = (await request.json()) as StudentPostBody;
   const prisma = getPrisma();
 
-  //4. Add new Student data
-  // await prisma...
+  try {
+    await prisma.student.create({
+      data: {
+        studentId: body.studentId,
+        firstName: body.firstName,
+        lastName: body.lastName,
+      },
+    });
 
-  // return NextResponse.json<StudentPostErrorResponse>(
-  //   { ok: false, message: "Student Id already exists" },
-  //   { status: 400 }
-  // );
-
-  // return NextResponse.json<StudentPostOKResponse>({ ok: true });
+    return NextResponse.json<StudentPostOKResponse>({ ok: true });
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("duplicate key")) {
+      return NextResponse.json<StudentPostErrorResponse>(
+        { ok: false, message: "Student ID already exists" },
+        { status: 400 }
+      );
+    } else {
+      throw error;
+    }
+  }
 };
