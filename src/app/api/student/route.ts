@@ -48,12 +48,14 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json<StudentPostOKResponse>({ ok: true });
   } catch (error) {
     if (error instanceof Error && error.message.includes("duplicate key")) {
-      return NextResponse.json<StudentPostErrorResponse>(
-        { ok: false, message: "Student ID already exists" },
-        { status: 400 }
-      );
+      return NextResponse.json<StudentPostErrorResponse>({
+        ok: false,
+        message: "Student ID already exists",
+      }, { status: 400 });
     } else {
       throw error;
     }
   }
 };
+
+  

@@ -44,26 +44,19 @@ export const AddStudentSection: FC = () => {
   });
 
   const callStudentPost = async () => {
-    try {
+    if (form.values.studentId && form.values.firstName && form.values.lastName) {
       const resp = await studentPostMutation.mutateAsync(form.values);
-      console.log(resp);
       if (!resp) {
         alert("Oops, please try again later");
       } else if (!resp.ok) {
-        if (resp.message === "Student Id already exists") {
-          alert("Student ID already exists");
-        } else {
-          alert(resp.message);
-        }
+        alert(`Validation error: ${resp.message}`);
       } else {
-        refetch();
+        refetch();  
       }
-    } catch (error) {
-      console.error(error); 
-      alert("Oops, please try again later");
+    } else {
+      alert("Please fill in all fields.");
     }
   };
-  
 
   return (
     <Paper withBorder p="xs">
